@@ -171,12 +171,12 @@ main (void)
 	      if (until_pause >= 4)
 		{
 		  end_long_pause_time = current_time + (LONG_PAUSE_TIME * 60);
-		  send_notifiction("Pomato", "Time for a long pause. Grab some tea!");
+		  send_notifiction ("Pomato", "Time for a long pause. Grab some tea!");
 		  state = LONG_PAUSE;
 		}
 	      else
 		{
-		  send_notifiction("Pomato", "Time for a pause.");
+		  send_notifiction ("Pomato", "Time for a pause.");
 		  state = PAUSE;
 		}
 	    }
@@ -192,7 +192,7 @@ main (void)
 	  if (time_diff == 0)
 	    {
 	      end_work_time = current_time + (WORK_TIME * 60);
-	      send_notifiction("Pomato", "Time to Work!");
+	      send_notifiction ("Pomato", "Time to Work!");
 	      state = WORK;
 	    }
 	  break;
@@ -208,7 +208,7 @@ main (void)
 	    {
 	      end_work_time = current_time + (WORK_TIME * 60);
 	      until_pause = 0;
-	      send_notifiction("Pomato", "Time to Work!");
+	      send_notifiction ("Pomato", "Time to Work!");
 	      state = WORK;
 	    }
 	  break;
@@ -224,8 +224,8 @@ main (void)
 	  ClearBackground (MENU_BG);
 	  DrawText (clock_str, clock_pos.x, clock_pos.y, timer_fontSize,
 		    FONT_COLOR);
-	  // DrawText("PRESS [SPACE] to START!", 60 , height/2-30, 20, WHITE);
-	  // DrawText("PRESS [ENTER] to RESTART!", 60, height/2, 20, WHITE);
+	  DrawText ("[SPACE] to START! - [ENTER] to RESTART!", clock_pos.x,
+		    (clock_pos.y+timer_fontSize-10), 10, FONT_COLOR);
 	  break;
 	case WORK:
 	  ClearBackground (WORK_BG);
@@ -255,6 +255,6 @@ main (void)
 
   CloseWindow ();
 
-  return EXIT_SUCCESS;
+  return 0;
 
 }
