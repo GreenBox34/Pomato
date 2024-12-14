@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 #include <time.h>
+#include <unistd.h>
 
 #include <raylib.h>
 #include <libnotify/notify.h>
@@ -65,13 +66,30 @@ send_notifiction (char *title, char *message)
   notify = notify_notification_new (title, message, NULL);
 
   notify_notification_show (notify, NULL);
-
 }
 
 int
-main (void)
+main (int argc, char **argv)
 {
 
+  int c;
+  while ((c = getopt (argc, argv, ":v")) != -1)
+    {
+      switch (c)
+	{
+	case 'v':
+	  printf ("Pomato 0.1\n");
+	  printf ("Copyright (C) 2024 \n");
+	  printf ("License: Zero-Clause BSD\n");
+	  return 0;
+	  break;
+	case '?':
+	  fprintf (stderr, "unknown option: -%c\n", optopt);
+	  return 1;
+	  break;
+	}
+    }
+  
   InitWindow (400, 400, "Pomato - Pomodoro Timer");
 
   SetTargetFPS (60);
