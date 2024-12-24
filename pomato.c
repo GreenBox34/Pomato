@@ -47,7 +47,7 @@ convert_seconds (int seconds)
 }
 
 int
-timer (time_t current_time, time_t end_time)
+get_time_diff (time_t current_time, time_t end_time)
 {
   return (int) difftime (end_time, current_time);
 }
@@ -176,7 +176,7 @@ main (int argc, char **argv)
 	  break;
 	case WORK:
 	  /* work timer */
-	  time_diff = timer (current_time, end_work_time);
+	  time_diff = get_time_diff (current_time, end_work_time);
 	  counter = convert_seconds (time_diff);
 	  snprintf (timer_str, sizeof (timer_str), "%.2d:%.2d",
 		    counter.minutes, counter.seconds);
@@ -185,10 +185,10 @@ main (int argc, char **argv)
 	  if (time_diff == 0)
 	    {
 	      until_pause += 1;
-	      end_pause_time = current_time + (PAUSE_TIME * 60);
+	      end_pause_time = calc_time(current_time, PAUSE_TIME);
 	      if (until_pause >= 4)
 		{
-		  end_long_pause_time = current_time + (LONG_PAUSE_TIME * 60);
+		  end_long_pause_time = calc_time(current_time, LONG_PAUSE_TIME);
 		  send_notifiction ("Pomato", "Time for a long pause. Grab some tea!");
 		  state = LONG_PAUSE;
 		}
@@ -201,7 +201,7 @@ main (int argc, char **argv)
 	  break;
 	case PAUSE:
 	  /* pause timer */
-	  time_diff = timer (current_time, end_pause_time);
+	  time_diff = get_time_diff (current_time, end_pause_time);
 	  counter = convert_seconds (time_diff);
 	  snprintf (timer_str, sizeof (timer_str), "%.2d:%.2d",
 		    counter.minutes, counter.seconds);
@@ -209,14 +209,14 @@ main (int argc, char **argv)
 		    clock->tm_hour, clock->tm_min);
 	  if (time_diff == 0)
 	    {
-	      end_work_time = current_time + (WORK_TIME * 60);
+	      end_work_time = calc_time(current_time, WORK_TIME);
 	      send_notifiction ("Pomato", "Time to Work!");
 	      state = WORK;
 	    }
 	  break;
 	case LONG_PAUSE:
 	  /* long pause */
-	  time_diff = timer (current_time, end_long_pause_time);
+	  time_diff = get_time_diff (current_time, end_long_pause_time);
 	  counter = convert_seconds (time_diff);
 	  snprintf (timer_str, sizeof (timer_str), "%.2d:%.2d",
 		    counter.minutes, counter.seconds);
@@ -224,7 +224,7 @@ main (int argc, char **argv)
 		    clock->tm_hour, clock->tm_min);
 	  if (time_diff == 0)
 	    {
-	      end_work_time = current_time + (WORK_TIME * 60);
+	      end_work_time = calc_time(current_time, WORK_TIME);
 	      until_pause = 0;
 	      send_notifiction ("Pomato", "Time to Work!");
 	      state = WORK;
