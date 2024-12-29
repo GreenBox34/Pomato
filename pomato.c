@@ -114,7 +114,7 @@ main (int argc, char **argv)
   int text_height = 0;
   int new_width = 0;
   int new_height = 0;
-  int time_diff = 0;
+  int remaining_time = 0;
   time_t current_time;
   time (&current_time);
   time_t end_work_time = calc_time (current_time, WORK_TIME);
@@ -185,13 +185,13 @@ main (int argc, char **argv)
 	  break;
 	case WORK:
 	  /* work timer */
-	  time_diff = get_time_diff (current_time, end_work_time);
-	  counter = convert_seconds (time_diff);
+	  remaining_time = get_time_diff (current_time, end_work_time);
+	  counter = convert_seconds (remaining_time);
 	  snprintf (timer_str, sizeof (timer_str), "%.2d:%.2d",
 		    counter.minutes, counter.seconds);
 	  snprintf (clock_str, sizeof (clock_str), "%.2d:%.2d",
 		    clock->tm_hour, clock->tm_min);
-	  if (time_diff == 0)
+	  if (remaining_time == 0)
 	    {
 	      until_pause += 1;
 	      end_pause_time = calc_time(current_time, PAUSE_TIME);
@@ -210,13 +210,13 @@ main (int argc, char **argv)
 	  break;
 	case PAUSE:
 	  /* pause timer */
-	  time_diff = get_time_diff (current_time, end_pause_time);
-	  counter = convert_seconds (time_diff);
+	  remaining_time = get_time_diff (current_time, end_pause_time);
+	  counter = convert_seconds (remaining_time);
 	  snprintf (timer_str, sizeof (timer_str), "%.2d:%.2d",
 		    counter.minutes, counter.seconds);
 	  snprintf (clock_str, sizeof (clock_str), "%.2d:%.2d",
 		    clock->tm_hour, clock->tm_min);
-	  if (time_diff == 0)
+	  if (remaining_time == 0)
 	    {
 	      end_work_time = calc_time(current_time, WORK_TIME);
 	      send_notifiction ("Pomato", "Time to Work!");
@@ -225,13 +225,13 @@ main (int argc, char **argv)
 	  break;
 	case LONG_PAUSE:
 	  /* long pause */
-	  time_diff = get_time_diff (current_time, end_long_pause_time);
-	  counter = convert_seconds (time_diff);
+	  remaining_time = get_time_diff (current_time, end_long_pause_time);
+	  counter = convert_seconds (remaining_time);
 	  snprintf (timer_str, sizeof (timer_str), "%.2d:%.2d",
 		    counter.minutes, counter.seconds);
 	  snprintf (clock_str, sizeof (clock_str), "%.2d:%.2d",
 		    clock->tm_hour, clock->tm_min);
-	  if (time_diff == 0)
+	  if (remaining_time == 0)
 	    {
 	      end_work_time = calc_time(current_time, WORK_TIME);
 	      until_pause = 0;
