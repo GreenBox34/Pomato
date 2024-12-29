@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <getopt.h>
 #include <time.h>
 #include <unistd.h>
 
@@ -73,8 +74,15 @@ int
 main (int argc, char **argv)
 {
 
+  static struct option long_options[] =
+    {
+      {"version", no_argument, 0, 'v'},
+      {0, 0, 0, 0}
+    };
+
   int c;
-  while ((c = getopt (argc, argv, ":v")) != -1)
+  int option_index = 0;
+  while ((c = getopt_long (argc, argv, ":v", long_options, &option_index)) != -1)
     {
       switch (c)
 	{
@@ -86,7 +94,7 @@ main (int argc, char **argv)
 	  break;
 	case '?':
 	  fprintf (stderr, "unknown option: -%c\n", optopt);
-	  exit(EXIT_FAILURE)
+	  exit(EXIT_FAILURE);
 	  break;
 	}
     }
