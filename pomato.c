@@ -5,6 +5,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
 
@@ -81,18 +82,16 @@ main (int argc, char **argv)
 	  printf ("Pomato 0.1\n");
 	  printf ("Copyright (C) 2024 \n");
 	  printf ("License: Zero-Clause BSD\n");
-	  return 0;
+	  exit(EXIT_SUCCESS);
 	  break;
 	case '?':
 	  fprintf (stderr, "unknown option: -%c\n", optopt);
-	  return 1;
+	  exit(EXIT_FAILURE)
 	  break;
 	}
     }
   
-  InitWindow (400, 400, "Pomato - Pomodoro Timer");
-
-  SetTargetFPS (60);
+  InitWindow (400, 400, "Pomato - Clock/Pomodoro Timer");
 
   struct tm *clock;
   State state = MENU;
@@ -113,6 +112,8 @@ main (int argc, char **argv)
   time_t end_work_time = calc_time (current_time, WORK_TIME);
   time_t end_pause_time = calc_time (current_time, PAUSE_TIME);
   time_t end_long_pause_time = calc_time (current_time, LONG_PAUSE_TIME);
+
+  SetTargetFPS (60);
 
   while (!WindowShouldClose ())
     {
@@ -273,6 +274,6 @@ main (int argc, char **argv)
 
   CloseWindow ();
 
-  return 0;
+  return EXIT_SUCCESS;
 
 }
