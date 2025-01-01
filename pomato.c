@@ -1,4 +1,4 @@
-/* Pomato -- Simple Clock/Pomodoro Timer */
+/* Pomato – Simple Clock/Pomodoro Timer */
 
 /* 
  * This software is licensed under the BSD 0-Clause License; see LICENSE. 
@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <getopt.h>
 #include <time.h>
 #include <unistd.h>
@@ -70,6 +71,23 @@ send_notifiction (char *title, char *message)
   notify_notification_show (notify, NULL);
 }
 
+bool
+draw_button (int posX, int posY, int width, int height, Color color)
+{
+  Rectangle rect = {posX, posY, width, height};
+  DrawRectangleRec (rect, color);
+
+  if (IsMouseButtonPressed (MOUSE_LEFT_BUTTON))
+    {
+      Vector2 mouse_pos = GetMousePosition();
+      if (CheckCollisionPointRec(mouse_pos, rect))
+	return true;
+    }
+
+  return false;
+
+}
+
 int
 main (int argc, char **argv)
 {
@@ -106,15 +124,20 @@ main (int argc, char **argv)
   Convert counter = {0};
   Vector2 timer_pos = {0};
   Vector2 clock_pos = {0};
+  Vector2 info_button_pos = {0};
+  Vector2 start_pomodoro_pos = {0};
   char timer_str[6];
   char clock_str[6];
-  const int timer_fontSize = 86;
+  const int timer_fontSize = 80;
   int until_pause = 0;
   int text_width = 0;
   int text_height = 0;
   int new_width = 0;
   int new_height = 0;
   int remaining_time = 0;
+  int button_size = 30;
+  bool start_pomodoro = false;
+  bool info_button = false;
   time_t current_time;
   time (&current_time);
   time_t end_work_time = calc_time (current_time, WORK_TIME);
@@ -142,6 +165,14 @@ main (int argc, char **argv)
 
 	  clock_pos.x = (new_width / 2) - (text_width / 2);
 	  clock_pos.y = (new_height / 2) - (text_height / 2);
+
+	  /* update button positions */
+	  info_button_pos.x = (new_width - button_size - 5);
+	  info_button_pos.y = (new_height - new_height + 10);;
+
+	  start_pomodoro_pos.x = (new_width - button_size*2 - 10);
+	  start_pomodoro_pos.y = (new_height - new_height + 10);
+
 	}
       else
 	{
@@ -154,6 +185,11 @@ main (int argc, char **argv)
 
 	  timer_pos.x = (new_width / 2) - (text_width / 2);
 	  timer_pos.y = (new_height / 2) - (text_height / 2);
+
+	  /* update button positions */
+	  start_pomodoro_pos.x = (new_width - button_size - 5);
+	  start_pomodoro_pos.y = (new_height - new_height + 5);
+
 	}
 
       if (IsKeyPressed (KEY_SPACE))
@@ -175,6 +211,32 @@ main (int argc, char **argv)
 	  end_pause_time = calc_time (current_time, PAUSE_TIME);
 	  end_long_pause_time = calc_time (current_time, LONG_PAUSE_TIME);
 
+	}
+
+      if (info_button == true)
+	{
+	  printf("info button clicked\n");
+	}
+
+      if (start_pomodoro == true)
+	{
+	  if (state == WORK || state == PAUSE || state == LONG_PAUSE)
+	    {
+	      start_pomodoro = false;
+	      state = MENU;
+	      until_pause = 0;
+
+	      /* reset time. */
+	      time (&current_time);
+	      end_work_time = calc_time (current_time, WORK_TIME);
+	      end_pause_time = calc_time (current_time, PAUSE_TIME);
+	      end_long_pause_time = calc_time (current_time, LONG_PAUSE_TIME);
+	    }
+	  else
+	    {
+	      start_pomodoro = true;
+	      state = WORK;
+	    }
 	}
 
       switch (state)
@@ -249,6 +311,8 @@ main (int argc, char **argv)
 	{
 	case MENU:
 	  ClearBackground (MENU_BG);
+	  start_pomodoro = draw_button (start_pomodoro_pos.x, start_pomodoro_pos.y, button_size, button_size, BLACK);
+	  info_button = draw_button (info_button_pos.x, info_button_pos.y, button_size, button_size, BLACK);
 	  DrawText (clock_str, clock_pos.x, clock_pos.y, timer_fontSize,
 		    FONT_COLOR);
 	  DrawText ("[SPACE] to START! - [ENTER] to RESTART!", clock_pos.x,
@@ -256,17 +320,20 @@ main (int argc, char **argv)
 	  break;
 	case WORK:
 	  ClearBackground (WORK_BG);
+	  start_pomodoro = draw_button (start_pomodoro_pos.x, start_pomodoro_pos.y, button_size, button_size, BLACK);
 	  DrawText (timer_str, timer_pos.x, timer_pos.y, timer_fontSize,
 		    FONT_COLOR);
 	  DrawText (clock_str, 10, 10, 20, FONT_COLOR);
 	  break;
 	case PAUSE:
 	  ClearBackground (PAUSE_BG);
+	  start_pomodoro = draw_button (start_pomodoro_pos.x, start_pomodoro_pos.y, button_size, button_size, BLACK);
 	  DrawText (timer_str, timer_pos.x, timer_pos.y, timer_fontSize,
 		    FONT_COLOR);
 	  DrawText (clock_str, 10, 10, 20, FONT_COLOR);
 	  break;
 	case LONG_PAUSE:
+	  start_pomodoro = draw_button (start_pomodoro_pos.x, start_pomodoro_pos.y, button_size, button_size, BLACK);
 	  ClearBackground (LONG_PAUSE_BG);
 	  DrawText (timer_str, timer_pos.x, timer_pos.y, timer_fontSize,
 		    FONT_COLOR);
