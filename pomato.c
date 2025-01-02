@@ -72,15 +72,16 @@ send_notifiction (char *title, char *message)
 }
 
 bool
-draw_button (int posX, int posY, int width, int height, Color color)
+draw_button (Vector2 position, Texture2D texture, Color color)
 {
-  Rectangle rect = {posX, posY, width, height};
-  DrawRectangleRec (rect, color);
+  Rectangle rect_bounds = {position.x, position.y, 32, 32};
+
+  DrawTextureRec (texture, (Rectangle){0, 0, 32, 32}, position, color);
 
   if (IsMouseButtonPressed (MOUSE_LEFT_BUTTON))
     {
       Vector2 mouse_pos = GetMousePosition();
-      if (CheckCollisionPointRec(mouse_pos, rect))
+      if (CheckCollisionPointRec(mouse_pos, rect_bounds))
 	return true;
     }
 
@@ -135,7 +136,7 @@ main (int argc, char **argv)
   int new_width = 0;
   int new_height = 0;
   int remaining_time = 0;
-  int button_size = 30;
+  int button_size = 32;
   bool start_pomodoro = false;
   bool info_button = false;
   time_t current_time;
@@ -143,6 +144,10 @@ main (int argc, char **argv)
   time_t end_work_time = calc_time (current_time, WORK_TIME);
   time_t end_pause_time = calc_time (current_time, PAUSE_TIME);
   time_t end_long_pause_time = calc_time (current_time, LONG_PAUSE_TIME);
+
+  Texture2D info_button_texture = LoadTexture("resources/question_mark.png");
+  Texture2D back_button_texture = LoadTexture("resources/back.png");
+  Texture2D clock_texture = LoadTexture("resources/clock.png");
 
   SetTargetFPS (60);
 
@@ -311,8 +316,8 @@ main (int argc, char **argv)
 	{
 	case MENU:
 	  ClearBackground (MENU_BG);
-	  start_pomodoro = draw_button (start_pomodoro_pos.x, start_pomodoro_pos.y, button_size, button_size, BLACK);
-	  info_button = draw_button (info_button_pos.x, info_button_pos.y, button_size, button_size, BLACK);
+	  start_pomodoro = draw_button (start_pomodoro_pos, clock_texture, WHITE);
+	  info_button = draw_button (info_button_pos, info_button_texture, WHITE);
 	  DrawText (clock_str, clock_pos.x, clock_pos.y, timer_fontSize,
 		    FONT_COLOR);
 	  DrawText ("[SPACE] to START! - [ENTER] to RESTART!", clock_pos.x,
@@ -320,20 +325,20 @@ main (int argc, char **argv)
 	  break;
 	case WORK:
 	  ClearBackground (WORK_BG);
-	  start_pomodoro = draw_button (start_pomodoro_pos.x, start_pomodoro_pos.y, button_size, button_size, BLACK);
+	  start_pomodoro = draw_button (start_pomodoro_pos, back_button_texture, WHITE);
 	  DrawText (timer_str, timer_pos.x, timer_pos.y, timer_fontSize,
 		    FONT_COLOR);
 	  DrawText (clock_str, 10, 10, 20, FONT_COLOR);
 	  break;
 	case PAUSE:
 	  ClearBackground (PAUSE_BG);
-	  start_pomodoro = draw_button (start_pomodoro_pos.x, start_pomodoro_pos.y, button_size, button_size, BLACK);
+	  start_pomodoro = draw_button (start_pomodoro_pos, back_button_texture, WHITE);
 	  DrawText (timer_str, timer_pos.x, timer_pos.y, timer_fontSize,
 		    FONT_COLOR);
 	  DrawText (clock_str, 10, 10, 20, FONT_COLOR);
 	  break;
 	case LONG_PAUSE:
-	  start_pomodoro = draw_button (start_pomodoro_pos.x, start_pomodoro_pos.y, button_size, button_size, BLACK);
+	  start_pomodoro = draw_button (start_pomodoro_pos, back_button_texture, WHITE);
 	  ClearBackground (LONG_PAUSE_BG);
 	  DrawText (timer_str, timer_pos.x, timer_pos.y, timer_fontSize,
 		    FONT_COLOR);
@@ -346,6 +351,10 @@ main (int argc, char **argv)
       EndDrawing ();
 
     }
+
+  UnloadTexture (clock_texture);
+  UnloadTexture (back_button_texture);
+  UnloadTexture (info_button_texture);
 
   CloseWindow ();
 
