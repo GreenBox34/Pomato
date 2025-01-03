@@ -1,7 +1,7 @@
 /* Pomato – Simple Clock/Pomodoro Timer */
 
-/* 
- * This software is licensed under the BSD 0-Clause License; see LICENSE. 
+/*
+ * This software is licensed under the BSD 0-Clause License; see LICENSE.
  */
 
 #include <stdio.h>
@@ -142,7 +142,7 @@ main (int argc, char **argv)
 	  break;
 	}
     }
-  
+
   InitWindow (400, 400, "Pomato - Clock/Pomodoro Timer");
 
   struct tm *clock;
@@ -228,7 +228,7 @@ main (int argc, char **argv)
 	    send_notifiction("Pomato", "Time to Work!");
 	  state = WORK;
 	}
-     
+
       /* reset */
       if (IsKeyPressed (KEY_ENTER))
 	{
