@@ -14,6 +14,10 @@
 #include <raylib.h>
 #include <libnotify/notify.h>
 
+#include "back_png.h"
+#include "clock_png.h"
+#include "question_mark_png.h"
+
 #define FONT_COLOR    (Color){235, 219, 178, 255}
 #define MENU_BG       (Color){29,  32,  33,  255}
 #define WORK_BG       (Color){204, 36,  29,  255}
@@ -89,6 +93,27 @@ draw_button (Vector2 position, Texture2D texture, Color color)
 
 }
 
+Texture2D
+load_texture_from_header_file (const unsigned char *fileData, const int dataSize)
+{
+
+  Image raw_image = LoadImageFromMemory (".png", fileData, dataSize);
+  if (raw_image.data == NULL)
+    {
+      fprintf (stderr, "error: cloud not load texture.\n");
+      exit (1);
+    }
+
+  Texture2D texture = LoadTextureFromImage (raw_image);
+  if (IsTextureReady (texture))
+    {
+      UnloadImage (raw_image);
+    }
+
+  return texture;
+
+}
+
 int
 main (int argc, char **argv)
 {
@@ -145,9 +170,9 @@ main (int argc, char **argv)
   time_t end_pause_time = calc_time (current_time, PAUSE_TIME);
   time_t end_long_pause_time = calc_time (current_time, LONG_PAUSE_TIME);
 
-  Texture2D info_button_texture = LoadTexture("resources/question_mark.png");
-  Texture2D back_button_texture = LoadTexture("resources/back.png");
-  Texture2D clock_texture = LoadTexture("resources/clock.png");
+  Texture2D info_button_texture = load_texture_from_header_file(question_mark_png, question_mark_png_len);
+  Texture2D back_button_texture = load_texture_from_header_file(back_png, back_png_len);
+  Texture2D clock_texture = load_texture_from_header_file(clock_png, clock_png_len);
 
   SetTargetFPS (60);
 
