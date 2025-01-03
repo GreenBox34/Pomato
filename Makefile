@@ -1,26 +1,28 @@
-CC=gcc
-CFLAGS= -Wall -Wextra
-PGK_CONFIG=`pkg-config --cflags --libs raylib libnotify`
+CC      = cc
+CFLAGS  = -Wall -Wextra -Werror -m64
+INCLUDE = `pkg-config --cflags raylib libnotify`
+LDLIBS  = `pkg-config --libs raylib libnotify`
+OBJECTS = pomato.o
+LDFLAGS =
 
-all: pomato
+pomato: $(OBJECTS)
+	$(CC) $(OBJECTS) $(CFLAGS) $(LDFLAGS) $(LDLIBS) -o $@
 
-pomato: pomato.c
-	$(CC) $(CFLAGS) -o $@ pomato.c $(PGK_CONFIG) 
+pomato.o: pomato.c
+	$(CC) -c pomato.c $(CFLAGS) $(INCLUDE)
 
-install:
-	strip pomato
+install: pomato
 	mkdir -p /usr/local/bin
 	cp -v pomato /usr/local/bin
 	chmod 755 /usr/local/bin/pomato
 
 uninstall:
-	rm -v /usr/local/bin/pomato
+	rm -fv /usr/local/bin/pomato
 
 run: pomato
 	./pomato
 
 clean:
-	rm -f pomato
+	rm -f pomato *.o
 
-.PHONY: all run clean install uninstall
-
+.PHONY: run clean install uninstall
